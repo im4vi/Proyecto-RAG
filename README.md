@@ -37,6 +37,15 @@ cp .env.example .env
 ```
 
 ### 3 - Ejecutar el script automático de preparación de entorno
+
+La primera vez:
+
 ```bash
-./install.sh
+source install.sh
+```
+
+Después de esto simplemente:
+
+```bash
+source venv/bin/activate
 ```
