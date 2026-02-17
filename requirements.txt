@@ -1,0 +1,22 @@
+# LLM
+ollama
+
+# Vector store
+chromadb
+
+# Framework RAG
+langchain
+langchain-community
+langchain-ollama
+
+# Procesamiento de texto
+beautifulsoup4
+lxml
+
+# API
+fastapi
+uvicorn
+
+# Utilidades
+python-dotenv
+sentence-transformers
