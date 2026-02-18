@@ -20,3 +20,4 @@ uvicorn
 # Utilidades
 python-dotenv
 sentence-transformers
+pypdf
