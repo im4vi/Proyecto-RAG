@@ -21,3 +21,4 @@ uvicorn
 python-dotenv
 sentence-transformers
 pypdf
+langchain-text-splitters

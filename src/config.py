@@ -6,7 +6,6 @@ load_dotenv()
 
 
 class Config:
-    """Configuración centralizada de la aplicación"""
 
     # Rutas
     RAW_DATA_PATH = Path("data/raw")
@@ -27,7 +26,6 @@ class Config:
 
     @classmethod
     def ensure_directories(cls):
-        """Crea los directorios necesarios si no existen"""
         cls.RAW_DATA_PATH.mkdir(parents=True, exist_ok=True)
         cls.CLEAN_DATA_PATH.mkdir(parents=True, exist_ok=True)
         cls.VECTORSTORE_PATH.mkdir(parents=True, exist_ok=True)
