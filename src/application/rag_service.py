@@ -4,7 +4,7 @@ from src.infrastructure.repositories.vector_repository import VectorRepository
 from src.infrastructure.services.embedding_service import EmbeddingService
 
 
-class RAGService
+class RAGService:
     
     def __init__(
         self,
