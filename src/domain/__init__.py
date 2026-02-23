@@ -1,4 +1,3 @@
-from .document import Document
-from .chunk import Chunk
+from .entities import Document, Chunk
 
 __all__ = ["Document", "Chunk"]

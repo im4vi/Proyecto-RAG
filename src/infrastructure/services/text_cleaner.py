@@ -1,5 +1,5 @@
 import re
-from src.domain.document import Document
+from src.domain.entities import Document
 
 
 class TextCleaner:

@@ -1,7 +1,7 @@
 from pathlib import Path
 from pypdf import PdfReader
 from typing import List
-from src.domain.document import Document
+from src.domain.entities import Document
 
 
 class PDFLoader:

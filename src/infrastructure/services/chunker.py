@@ -1,8 +1,6 @@
 from typing import List
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from src.domain.document import Document
-from src.domain.chunk import Chunk
-
+from src.domain.entities import Document, Chunk
 
 class Chunker:
 
