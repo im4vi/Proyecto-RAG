@@ -26,14 +26,14 @@ a un modelo de lenguaje local (Phi-3-mini) para generar una respuesta enriquecid
 
 ## Cómo levantarlo
 
-### 1 — Clonar e instalar
+### 1 - Clonar e instalar
 ```bash
 git clone https://github.com/im4vi/Proyecto-RAG.git
 cd Proyecto-RAG
 source install.sh
 ```
 
-### 2 — Indexar documentos
+### 2 - Indexar documentos
 ```bash
 # Coloca PDFs de Confluence en data/raw/
 cp /ruta/*.pdf data/raw/
@@ -42,7 +42,7 @@ cp /ruta/*.pdf data/raw/
 python -m src.data_pipeline
 ```
 
-### 3 — Arrancar API
+### 3 - Arrancar API
 ```bash
 ./run_api.sh
 # Abre http://localhost:8000/docs
