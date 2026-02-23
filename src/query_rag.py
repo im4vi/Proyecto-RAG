@@ -1,7 +1,7 @@
-from src.config import Config
+from src.infrastructure.configuration.config import Config
 from src.infrastructure.services.embedding_service import EmbeddingService
 from src.infrastructure.repositories.vector_repository import VectorRepository
-from src.application.rag_service import RAGService
+from src.application.use_cases.ask_question_use_case import AskQuestionUseCase
 
 
 def main():
@@ -14,8 +14,8 @@ def main():
         embedding_service=embedding_service
     )
     
-    # Crear el servicio RAG
-    rag_service = RAGService(
+    # Crear el caso de uso
+    use_case = AskQuestionUseCase(
         vector_repository=vector_repository,
         ollama_host=Config.OLLAMA_HOST,
         ollama_model=Config.OLLAMA_MODEL,
@@ -26,12 +26,11 @@ def main():
     questions = [
         "¿Qué es una User Story?",
         "¿Cómo se valida una User Story?",
-        "¿Cuáles son los combos más locos del UFC-2023 PS5?",
         "¿Qué criterios debe cumplir una historia de usuario?"
     ]
     
     for question in questions:
-        rag_service.answer(question)
+        use_case.execute(question)
         print("\n")
 
 
