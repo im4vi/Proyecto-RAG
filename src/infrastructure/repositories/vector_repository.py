@@ -1,9 +1,8 @@
 from pathlib import Path
 from typing import List
 from langchain_community.vectorstores import Chroma
-from src.domain.chunk import Chunk
+from src.domain.entities import Chunk
 from src.infrastructure.services.embedding_service import EmbeddingService
-
 
 class VectorRepository:
 
