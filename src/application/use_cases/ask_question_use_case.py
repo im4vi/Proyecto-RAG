@@ -1,10 +1,10 @@
 from typing import List, Dict
 from langchain_ollama import OllamaLLM
 from src.infrastructure.repositories.vector_repository import VectorRepository
-from src.infrastructure.services.embedding_service import EmbeddingService
 
 
-class RAGService:
+class AskQuestionUseCase:
+    """Caso de uso: Responder preguntas usando RAG"""
     
     def __init__(
         self,
@@ -28,15 +28,14 @@ class RAGService:
         )
     
     def retrieve(self, query: str) -> List[Dict]:
+        """Recupera los chunks más relevantes para una consulta"""
         print(f"[+] Buscando chunks relevantes (top-{self.top_k})...")
         
         results = self.vectorstore.similarity_search(
             query=query,
             k=self.top_k
         )
-
-        # Formateo de resultados raros a diccionario simple
-
+        
         retrieved_chunks = []
         for i, doc in enumerate(results):
             chunk_info = {
@@ -48,12 +47,9 @@ class RAGService:
             print(f"  [{i+1}] {chunk_info['source']} (chunk {chunk_info['chunk_id']})")
         
         return retrieved_chunks
-   
-    # Concatenar todos los chunks en un solo string, separados por dos saltos de línea, y añadir
-    # el nombre del documento antes de cada chunk.
-
-
+    
     def generate_prompt(self, query: str, chunks: List[Dict]) -> str:
+        """Construye el prompt con contexto"""
         context = "\n\n".join([
             f"[Documento: {chunk['source']}]\n{chunk['content']}"
             for chunk in chunks
@@ -71,15 +67,9 @@ RESPUESTA:"""
         
         return prompt
     
-    def answer(self, question: str) -> str:
+    def execute(self, question: str) -> str:
         """
-        Función principal: recibe pregunta, devuelve respuesta
-        
-        Args:
-            question: Pregunta del usuario
-            
-        Returns:
-            Respuesta generada por el LLM con contexto
+        Ejecuta el caso de uso: recibe pregunta, devuelve respuesta
         """
         print("="*50)
         print(f"PREGUNTA: {question}")

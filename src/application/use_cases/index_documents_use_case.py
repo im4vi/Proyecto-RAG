@@ -1,5 +1,5 @@
 from pathlib import Path
-from src.domain.document import Document
+from src.domain.entities import Document
 from src.infrastructure.services.pdf_loader import PDFLoader
 from src.infrastructure.services.text_cleaner import TextCleaner
 from src.infrastructure.services.chunker import Chunker
@@ -7,8 +7,9 @@ from src.infrastructure.repositories.document_repository import DocumentReposito
 from src.infrastructure.repositories.vector_repository import VectorRepository
 
 
-class IndexingService:
-
+class IndexDocumentsUseCase:
+    """Caso de uso: Indexar documentos en el vector store"""
+    
     def __init__(
         self,
         pdf_loader: PDFLoader,
@@ -22,35 +23,36 @@ class IndexingService:
         self.chunker = chunker
         self.document_repository = document_repository
         self.vector_repository = vector_repository
-
-    def index_documents(self, raw_data_path: Path) -> None:
+    
+    def execute(self, raw_data_path: Path) -> None:
+        """Ejecuta el pipeline completo de indexación"""
         print("=" * 50)
         print("INDEXACIÓN DE DOCUMENTOS")
         print("=" * 50)
-
-        # Cargar PDFs
+        
+        # Paso 1: Cargar PDFs
         documents = self.pdf_loader.load_from_directory(raw_data_path)
-
+        
         if not documents:
             print("[!] No hay documentos para procesar")
             return
-
-        # Limpiar documentos
+        
+        # Paso 2: Limpiar documentos
         print("[+] Limpiando documentos...")
         cleaned_documents = [
             self.text_cleaner.clean(doc) for doc in documents
         ]
-
-        # Guardar documentos limpios
+        
+        # Paso 3: Guardar documentos limpios
         print("[+] Guardando documentos limpios...")
         self.document_repository.save_all(cleaned_documents)
-
-        # Dividir en chunks
+        
+        # Paso 4: Dividir en chunks
         chunks = self.chunker.chunk_documents(cleaned_documents)
-
-        # Guardar en vector store
+        
+        # Paso 5: Guardar en vector store
         self.vector_repository.save_chunks(chunks)
-
+        
         print("=" * 50)
         print("[+] Indexación completada exitosamente")
         print(f"[+] Documentos procesados: {len(documents)}")
