@@ -17,35 +17,72 @@ a un modelo de lenguaje local (Phi-3-mini) para generar una respuesta enriquecid
 
 ## Stack tecnológico
 
-- LLM: Phi-3-mini (via Ollama)
-- Embeddings: sentence-transformers/all-MiniLM-L6-v2
-- Vector Store: ChromaDB
-- Framework RAG: LangChain
-- API: FastAPI
+- **LLM:** Phi-3-mini (ejecutado localmente via Ollama)
+- **Embeddings:** sentence-transformers/all-MiniLM-L6-v2
+- **Vector Store:** ChromaDB
+- **Framework RAG:** LangChain
+- **API:** FastAPI
+- **Arquitectura:** Hexagonal (puertos y adaptadores)
 
 ## Cómo levantarlo
 
-### 1 - Clonar el repo
+### 1 - Clonar e instalar
 ```bash
 git clone https://github.com/im4vi/Proyecto-RAG.git
 cd Proyecto-RAG
-```
-
-### 2 - Configurar variables de entorno
-```bash
-cp .env.example .env
-```
-
-### 3 - Ejecutar el script automático de preparación de entorno
-
-La primera vez:
-
-```bash
 source install.sh
 ```
 
-Después de esto simplemente:
-
+### 2 - Indexar documentos
 ```bash
-source venv/bin/activate
+# Coloca PDFs de Confluence en data/raw/
+cp /ruta/*.pdf data/raw/
+
+# Indexar
+python -m src.data_pipeline
 ```
+
+### 3 - Arrancar API
+```bash
+./run_api.sh
+# Abre http://localhost:8000/docs
+```
+
+---
+
+## Ejemplos de uso
+
+### Desde el navegador
+
+`http://localhost:8000/docs` : Probar endpoint `POST /ask`
+
+### Desde terminal
+```bash
+curl -X POST http://localhost:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "¿Qué es una User Story?"}'
+```
+
+### Desde Python
+```python
+import requests
+response = requests.post(
+    "http://localhost:8000/ask",
+    json={"question": "¿Cómo se valida una User Story?"}
+)
+print(response.json()["answer"])
+```
+
+
+### Pasos
+
+1. **Crear endpoint `/validate`** que reciba User Story y devuelva si cumple criterios
+2. **Desplegar como container Docker** con Ollama
+3. **Comunicación HTTP** entre microservicios
+4. **Añadir en producción:** autenticación, rate limiting, caching (Redis), monitoring
+
+
+## Documentación adicional
+
+- **Investigación técnica:** `docs/investigacion.md`
+- **API interactiva:** http://localhost:8000/docs
