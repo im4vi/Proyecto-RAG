@@ -1,6 +1,5 @@
 from typing import List, Dict
-from langchain_ollama import OllamaLLM
-from src.infrastructure.repositories.vector_repository import VectorRepository
+from src.application.services import VectorRepositoryPort
 
 
 class AskQuestionUseCase:
@@ -8,24 +7,17 @@ class AskQuestionUseCase:
     
     def __init__(
         self,
-        vector_repository: VectorRepository,
-        ollama_host: str,
-        ollama_model: str,
+        vector_repository: VectorRepositoryPort,
+        llm_service,  # Por ahora dejamos genérico
         top_k: int = 3
     ):
         self.vector_repository = vector_repository
+        self.llm = llm_service
         self.top_k = top_k
         
         # Cargar el vector store
         print("[+] Cargando vector store...")
         self.vectorstore = vector_repository.load()
-        
-        # Inicializar el LLM
-        print(f"[+] Conectando con Ollama: {ollama_model}")
-        self.llm = OllamaLLM(
-            base_url=ollama_host,
-            model=ollama_model
-        )
     
     def retrieve(self, query: str) -> List[Dict]:
         """Recupera los chunks más relevantes para una consulta"""

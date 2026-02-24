@@ -1,10 +1,12 @@
 from pathlib import Path
 from src.domain.entities import Document
-from src.infrastructure.services.pdf_loader import PDFLoader
-from src.infrastructure.services.text_cleaner import TextCleaner
-from src.infrastructure.services.chunker import Chunker
-from src.infrastructure.repositories.document_repository import DocumentRepository
-from src.infrastructure.repositories.vector_repository import VectorRepository
+from src.application.services import (
+    DocumentLoaderPort,
+    TextCleanerPort,
+    ChunkerPort,
+    DocumentRepositoryPort,
+    VectorRepositoryPort
+)
 
 
 class IndexDocumentsUseCase:
@@ -12,13 +14,13 @@ class IndexDocumentsUseCase:
     
     def __init__(
         self,
-        pdf_loader: PDFLoader,
-        text_cleaner: TextCleaner,
-        chunker: Chunker,
-        document_repository: DocumentRepository,
-        vector_repository: VectorRepository
+        document_loader: DocumentLoaderPort,
+        text_cleaner: TextCleanerPort,
+        chunker: ChunkerPort,
+        document_repository: DocumentRepositoryPort,
+        vector_repository: VectorRepositoryPort
     ):
-        self.pdf_loader = pdf_loader
+        self.document_loader = document_loader
         self.text_cleaner = text_cleaner
         self.chunker = chunker
         self.document_repository = document_repository
@@ -31,7 +33,7 @@ class IndexDocumentsUseCase:
         print("=" * 50)
         
         # Paso 1: Cargar PDFs
-        documents = self.pdf_loader.load_from_directory(raw_data_path)
+        documents = self.document_loader.load_from_directory(raw_data_path)
         
         if not documents:
             print("[!] No hay documentos para procesar")
