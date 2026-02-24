@@ -2,18 +2,16 @@ from pathlib import Path
 from typing import List
 from langchain_community.vectorstores import Chroma
 from src.domain.entities import Chunk
-from src.infrastructure.services.embedding_service import EmbeddingService
-from src.application.services import VectorRepositoryPort
-
+from src.application.services import VectorRepositoryPort, EmbeddingPort
 
 class VectorRepository(VectorRepositoryPort):
     """Adaptador: implementa persistencia en ChromaDB"""
     
-    def __init__(self, storage_path: Path, embedding_service: EmbeddingService):
+    def __init__(self, storage_path: Path, embedding_service: EmbeddingPort):
         self.storage_path = storage_path
         self.embedding_service = embedding_service
         self.storage_path.mkdir(parents=True, exist_ok=True)
-    
+
     def save_chunks(self, chunks: List[Chunk]) -> None:
         if not chunks:
             print("[!] No hay chunks para guardar")
