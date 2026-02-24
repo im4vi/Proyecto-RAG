@@ -30,7 +30,7 @@ def main():
     ]
     
     for question in questions:
-        use_case.execute(question)
+        result = use_case.execute(question)
         print("\n")
 
 

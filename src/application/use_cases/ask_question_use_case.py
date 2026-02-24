@@ -48,30 +48,31 @@ RESPUESTA:"""
         
         return prompt
     
-    def execute(self, question: str) -> str:
-        """
-        Ejecuta el caso de uso: recibe pregunta, devuelve respuesta
-        """
-        print("="*50)
-        print(f"PREGUNTA: {question}")
-        print("="*50)
-        
-        # Paso 1: Recuperar chunks relevantes
-        chunks = self.retrieve(question)
-        
-        if not chunks:
-            return "No se encontró información relevante en la documentación."
-        
-        # Paso 2: Construir el prompt
-        prompt = self.generate_prompt(question, chunks)
-        
-        # Paso 3: Generar respuesta
-        print("[+] Generando respuesta...")
-        response = self.llm.generate(prompt)
-        
-        print("="*50)
-        print("RESPUESTA:")
-        print(response)
-        print("="*50)
-        
-        return response
+    def execute(self, question: str) -> Dict[str, any]:
+    """Ejecuta el caso de uso: recibe pregunta, devuelve respuesta + chunks"""
+    print("="*50)
+    print(f"PREGUNTA: {question}")
+    print("="*50)
+    
+    chunks = self.retrieve(question)
+    
+    if not chunks:
+        return {
+            "answer": "No se encontró información relevante en la documentación.",
+            "chunks": []
+        }
+    
+    prompt = self.generate_prompt(question, chunks)
+    
+    print("[+] Generando respuesta...")
+    response = self.llm.generate(prompt)
+    
+    print("="*50)
+    print("RESPUESTA:")
+    print(response)
+    print("="*50)
+    
+    return {
+        "answer": response,
+        "chunks": chunks
+    }

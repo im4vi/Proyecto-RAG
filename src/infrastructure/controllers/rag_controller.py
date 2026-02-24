@@ -82,36 +82,29 @@ def ask_question(
     request: QuestionRequest,
     use_case: AskQuestionUseCase = Depends(get_ask_question_use_case)
 ):
-    """
-    Hacer una pregunta al sistema RAG
-    """
+    """Hacer una pregunta al sistema RAG"""
     try:
-        # Recuperar chunks
-        chunks = use_case.retrieve(request.question)
+        # Ejecutar caso de uso
+        result = use_case.execute(request.question)
         
-        # Generar respuesta
-        prompt = use_case.generate_prompt(request.question, chunks)
-        answer = use_case.llm.invoke(prompt)
-        
-        # Formatear chunks para la respuesta
+        # Formatear respuesta
         chunk_infos = [
             ChunkInfo(
                 content=chunk['content'],
                 source=chunk['source'],
                 chunk_id=chunk['chunk_id']
             )
-            for chunk in chunks
+            for chunk in result['chunks']
         ]
         
         return AnswerResponse(
             question=request.question,
-            answer=answer,
+            answer=result['answer'],
             retrieved_chunks=chunk_infos
         )
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing question: {str(e)}")
-
 
 if __name__ == "__main__":
     import uvicorn
