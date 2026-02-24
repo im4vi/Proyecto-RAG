@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Dict
 from src.domain.entities import Chunk
 
 
@@ -12,6 +12,6 @@ class VectorRepositoryPort(ABC):
         pass
     
     @abstractmethod
-    def load(self):
-        """Carga el vector store"""
+    def similarity_search(self, query: str, k: int) -> List[Dict]:
+        """Busca chunks similares a la consulta"""
         pass
