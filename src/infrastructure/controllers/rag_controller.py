@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 from src.application.use_cases.ask_question_use_case import AskQuestionUseCase
@@ -11,6 +12,16 @@ app = FastAPI(
     description="API para consultar documentación interna usando RAG",
     version="1.0.0"
 )
+
+# Añadir CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 
 # Modelos de request/response

@@ -25,7 +25,7 @@ def main():
     # Preguntas de prueba
     questions = [
         "¿Qué es una User Story?",
-        "¿Cómo se valida una User Story?",
+        "¿Cómo me llamo?",
         "¿Qué criterios debe cumplir una historia de usuario?"
     ]
     

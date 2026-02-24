@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <!-- Tailwind Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#38ff14",
+                        "cyan-accent": "#00f2ff",
+                        "background-light": "#f6f8f5",
+                        "background-dark": "#0a0c0a",
+                        "charcoal": "#121412",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["Fira Code", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <!-- Custom Styles -->
+    <style>
+        .grid-overlay {
+            background-image: radial-gradient(circle, #1a2e16 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .cyan-glow {
+            text-shadow: 0 0 8px rgba(0, 242, 255, 0.4);
+        }
+        .neon-glow {
+            text-shadow: 0 0 8px rgba(56, 255, 20, 0.4);
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-hidden h-screen flex flex-col">
+    <!-- Header -->
+    <header class="flex items-center justify-between px-4 py-3 bg-charcoal/80 border-b border-primary/10 backdrop-blur-md z-40">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-xl">menu</span>
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-widest text-primary/60 font-bold">System Status</span>
+                <div class="flex items-center gap-1.5">
+                    <div class="size-2 rounded-full bg-primary animate-pulse"></div>
+                    <span class="text-xs font-mono font-bold tracking-tighter text-primary">ENCRYPTED</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col items-end">
+            <div class="flex items-center gap-1 text-cyan-accent">
+                <span class="material-symbols-outlined text-sm">verified_user</span>
+                <span class="text-[10px] font-mono tracking-tighter">SECURE CONNECTION</span>
+            </div>
+            <span class="text-[10px] text-slate-500 font-mono">NODE: SG-042</span>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto relative grid-overlay p-4 flex flex-col gap-4" id="main-container">
+        <!-- Mensajes se añadirán dinámicamente desde JS -->
+    </main>
+
+    <!-- Terminal Input Area -->
+    <footer class="bg-charcoal border-t border-primary/10 p-4">
+        <div class="bg-black/60 border border-white/10 rounded p-3 flex items-center gap-2 focus-within:border-primary/40 transition-colors">
+            <span class="font-mono text-primary text-sm whitespace-nowrap">root@sec-bot:~#</span>
+            <input class="bg-transparent border-none focus:ring-0 text-slate-200 font-mono text-sm w-full p-0" placeholder="type command..." type="text" />
+            <button class="text-primary/60 hover:text-primary transition-colors">
+                <span class="material-symbols-outlined">send</span>
+            </button>
+        </div>
+    </footer>
+
+<script>
+    const API_URL = 'http://localhost:8000';
+
+    // Referencias a elementos
+    const inputElement = document.querySelector('input[type="text"]');
+    const sendButton = document.querySelector('footer button');
+    const mainContainer = document.getElementById('main-container');
+
+    // Función para añadir mensaje del usuario - alineado a la derecha
+    function addUserMessage(text) {
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const messageHTML = `
+            <div class="flex gap-3 items-start justify-end w-full">
+                <div class="flex flex-col gap-1.5 items-end max-w-[75%] sm:max-w-[65%] md:max-w-[55%]">
+                    <div class="bg-primary/10 border border-primary/20 p-3 rounded-lg rounded-tr-none shadow-sm">
+                        <p class="text-sm text-slate-100 break-words">${text}</p>
+                    </div>
+                    <span class="text-[9px] font-mono text-primary/60 neon-glow">ROOT@ADMIN • ${time}</span>
+                </div>
+                <div class="flex-shrink-0 mt-1">
+                    <img class="size-16 rounded-full object-cover border border-primary/30 shadow" src="./assets/javi.png" alt="User avatar" />
+                </div>
+            </div>
+        `;
+        mainContainer.insertAdjacentHTML('beforeend', messageHTML);
+        mainContainer.scrollTop = mainContainer.scrollHeight;
+    }
+
+    // Función para añadir mensaje del bot (sin cambios importantes)
+    function addBotMessage(text) {
+        const messageHTML = `
+            <div class="flex gap-3 w-full sm:w-3/4">
+                <div class="flex-shrink-0 mt-1">
+                    <img class="size-16 rounded-full object-cover border border-cyan-accent/30" src="./assets/antonio.jpg" alt="Bot avatar" />
+                </div>
+                <div class="flex flex-col gap-1.5 max-w-[75%] sm:max-w-[65%] md:max-w-[55%]">
+                    <div class="bg-charcoal border-l-4 border-cyan-accent p-4 rounded shadow-sm">
+                        <p class="font-mono text-sm text-cyan-accent/90 cyan-glow break-words">${text}</p>
+                    </div>
+                    <span class="text-[9px] font-mono text-slate-600">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC</span>
+                </div>
+            </div>
+        `;
+        mainContainer.insertAdjacentHTML('beforeend', messageHTML);
+        mainContainer.scrollTop = mainContainer.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+        const typingHTML = `
+            <div class="flex items-center gap-2 px-2" id="typing-indicator">
+                <span class="text-[10px] font-mono text-cyan-accent/50">RAG-Bot is processing</span>
+                <div class="flex gap-1">
+                    <div class="size-1 bg-cyan-accent rounded-full animate-bounce"></div>
+                    <div class="size-1 bg-cyan-accent rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div class="size-1 bg-cyan-accent rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                </div>
+            </div>
+        `;
+        mainContainer.insertAdjacentHTML('beforeend', typingHTML);
+        mainContainer.scrollTop = mainContainer.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+        const indicator = document.getElementById('typing-indicator');
+        if (indicator) indicator.remove();
+    }
+
+    async function sendQuestion() {
+        const question = inputElement.value.trim();
+        if (!question) return;
+
+        addUserMessage(question);
+        inputElement.value = '';
+
+        showTypingIndicator();
+
+        try {
+            const response = await fetch(`${API_URL}/ask`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            });
+
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
+
+            const data = await response.json();
+            removeTypingIndicator();
+            addBotMessage(data.answer);
+        } catch (error) {
+            removeTypingIndicator();
+            addBotMessage('Error: No se pudo conectar con el sistema RAG. Verifica que la API esté corriendo.');
+            console.error('Error:', error);
+        }
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    inputElement.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendQuestion();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        addBotMessage("Hola, soy Antoniollama. ¿En qué puedo ayudarte?");
+    });
+</script>
+</body>
+</html>
