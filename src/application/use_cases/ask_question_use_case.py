@@ -1,5 +1,5 @@
 from typing import List, Dict
-from src.application.services import VectorRepositoryPort
+from src.application.services import VectorRepositoryPort, LLMPort
 
 
 class AskQuestionUseCase:
@@ -8,38 +8,27 @@ class AskQuestionUseCase:
     def __init__(
         self,
         vector_repository: VectorRepositoryPort,
-        llm_service,  # Por ahora dejamos genérico
+        llm_service: LLMPort,
         top_k: int = 3
     ):
         self.vector_repository = vector_repository
         self.llm = llm_service
         self.top_k = top_k
         
-        # Cargar el vector store
         print("[+] Cargando vector store...")
-        self.vectorstore = vector_repository.load()
+        self.vector_repository.load()
     
     def retrieve(self, query: str) -> List[Dict]:
-        """Recupera los chunks más relevantes para una consulta"""
+        """Recupera los chunks más relevantes"""
         print(f"[+] Buscando chunks relevantes (top-{self.top_k})...")
         
-        results = self.vectorstore.similarity_search(
-            query=query,
-            k=self.top_k
-        )
+        chunks = self.vector_repository.similarity_search(query, self.top_k)
         
-        retrieved_chunks = []
-        for i, doc in enumerate(results):
-            chunk_info = {
-                'content': doc.page_content,
-                'source': doc.metadata.get('source', 'unknown'),
-                'chunk_id': doc.metadata.get('chunk_id', -1)
-            }
-            retrieved_chunks.append(chunk_info)
-            print(f"  [{i+1}] {chunk_info['source']} (chunk {chunk_info['chunk_id']})")
+        for i, chunk in enumerate(chunks):
+            print(f"  [{i+1}] {chunk['source']} (chunk {chunk['chunk_id']})")
         
-        return retrieved_chunks
-    
+        return chunks
+       
     def generate_prompt(self, query: str, chunks: List[Dict]) -> str:
         """Construye el prompt con contexto"""
         context = "\n\n".join([
@@ -78,7 +67,7 @@ RESPUESTA:"""
         
         # Paso 3: Generar respuesta
         print("[+] Generando respuesta...")
-        response = self.llm.invoke(prompt)
+        response = self.llm.generate(prompt)
         
         print("="*50)
         print("RESPUESTA:")
