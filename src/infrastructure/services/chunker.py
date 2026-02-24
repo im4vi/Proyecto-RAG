@@ -1,11 +1,12 @@
 from typing import List
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from src.domain.document import Document
-from src.domain.chunk import Chunk
+from src.domain.entities import Document, Chunk
+from src.application.services import ChunkerPort
 
 
-class Chunker:
-
+class Chunker(ChunkerPort):
+    """Adaptador: implementa división en chunks"""
+    
     def __init__(self, chunk_size: int, chunk_overlap: int):
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
@@ -15,22 +16,22 @@ class Chunker:
             length_function=len,
             separators=["\n\n", "\n", " ", ""]
         )
-
+    
     def chunk_documents(self, documents: List[Document]) -> List[Chunk]:
         print(f"[+] Dividiendo documentos en chunks (size={self.chunk_size}, overlap={self.chunk_overlap})")
-
+        
         all_chunks = []
-
+        
         for document in documents:
             chunks = self._chunk_single_document(document)
             all_chunks.extend(chunks)
-
+        
         print(f"[+] Generados {len(all_chunks)} chunks")
         return all_chunks
-
+    
     def _chunk_single_document(self, document: Document) -> List[Chunk]:
         text_chunks = self.splitter.split_text(document.content)
-
+        
         return [
             Chunk(
                 content=chunk_text,
