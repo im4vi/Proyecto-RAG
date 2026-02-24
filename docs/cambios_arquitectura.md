@@ -70,3 +70,22 @@ infrastructure (importa domain + application)
 
 **Problema anterior:** Application importaba Infrastructure directamente
 **Solución:** Infrastructure inyecta dependencias a Application
+
+
+## Retoques finales
+
+### Ports adicionales creados
+- **EmbeddingPort:** Abstrae servicio de embeddings
+- **LLMPort:** Abstrae servicio de LLM con método `generate()`
+
+### VectorRepositoryPort completo
+- Método `similarity_search()` en el puerto
+- No expone tipos concretos de ChromaDB
+
+### Controller simplificado
+- No duplica lógica del caso de uso
+- Solo formatea respuestas
+
+### Container completo
+- Factory para `IndexDocumentsUseCase`
+- Centraliza toda la creación de dependencias
