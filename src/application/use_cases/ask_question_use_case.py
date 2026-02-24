@@ -28,7 +28,7 @@ class AskQuestionUseCase:
             print(f"  [{i+1}] {chunk['source']} (chunk {chunk['chunk_id']})")
         
         return chunks
-       
+    
     def generate_prompt(self, query: str, chunks: List[Dict]) -> str:
         """Construye el prompt con contexto"""
         context = "\n\n".join([
@@ -49,30 +49,30 @@ RESPUESTA:"""
         return prompt
     
     def execute(self, question: str) -> Dict[str, any]:
-    """Ejecuta el caso de uso: recibe pregunta, devuelve respuesta + chunks"""
-    print("="*50)
-    print(f"PREGUNTA: {question}")
-    print("="*50)
-    
-    chunks = self.retrieve(question)
-    
-    if not chunks:
+        """Ejecuta el caso de uso: recibe pregunta, devuelve respuesta + chunks"""
+        print("="*50)
+        print(f"PREGUNTA: {question}")
+        print("="*50)
+        
+        chunks = self.retrieve(question)
+        
+        if not chunks:
+            return {
+                "answer": "No se encontró información relevante en la documentación.",
+                "chunks": []
+            }
+        
+        prompt = self.generate_prompt(question, chunks)
+        
+        print("[+] Generando respuesta...")
+        response = self.llm.generate(prompt)
+        
+        print("="*50)
+        print("RESPUESTA:")
+        print(response)
+        print("="*50)
+        
         return {
-            "answer": "No se encontró información relevante en la documentación.",
-            "chunks": []
+            "answer": response,
+            "chunks": chunks
         }
-    
-    prompt = self.generate_prompt(question, chunks)
-    
-    print("[+] Generando respuesta...")
-    response = self.llm.generate(prompt)
-    
-    print("="*50)
-    print("RESPUESTA:")
-    print(response)
-    print("="*50)
-    
-    return {
-        "answer": response,
-        "chunks": chunks
-    }
