@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from src.application.use_cases.ask_question_use_case import AskQuestionUseCase
 from src.infrastructure.configuration.container import get_ask_question_use_case
 from src.infrastructure.configuration.config import Config
@@ -22,16 +22,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-
 # Modelos de request/response
 class QuestionRequest(BaseModel):
     question: str
+    llm_type: Optional[str] = None
     
     class Config:
         json_schema_extra = {
             "example": {
-                "question": "¿Qué es una User Story?"
+                "question": "¿Qué es una User Story?",
+                "llm_type": "ollama"
             }
         }
 
@@ -46,45 +46,43 @@ class AnswerResponse(BaseModel):
     question: str
     answer: str
     retrieved_chunks: List[ChunkInfo]
-
+    llm_used: str
 
 # Endpoints
 @app.get("/")
 def root():
-    """Endpoint raíz - Info de la API"""
     return {
         "message": "RAG Confluence API",
         "version": "1.0.0",
+        "available_llms": ["ollama", "gemini"],
+        "default_llm": Config.DEFAULT_LLM,
         "endpoints": {
             "POST /ask": "Hacer una pregunta al sistema RAG",
             "GET /health": "Verificar estado del sistema"
         }
     }
 
-
 @app.get("/health")
-def health_check(use_case: AskQuestionUseCase = Depends(get_ask_question_use_case)):
-    """Verifica que el sistema está funcionando"""
+def health_check():
     try:
-        test_response = use_case.llm.invoke("test")
         return {
             "status": "healthy",
-            "ollama": "connected",
-            "model": Config.OLLAMA_MODEL,
-            "vectorstore": "loaded"
+            "available_llms": ["ollama", "gemini"],
+            "default_llm": Config.DEFAULT_LLM
         }
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"System unhealthy: {str(e)}")
 
 
 @app.post("/ask", response_model=AnswerResponse)
-def ask_question(
-    request: QuestionRequest,
-    use_case: AskQuestionUseCase = Depends(get_ask_question_use_case)
-):
+def ask_question(request: QuestionRequest):
     """Hacer una pregunta al sistema RAG"""
     try:
-        # Ejecutar caso de uso
+        # Crear caso de uso con el LLM elegido
+        llm_type = request.llm_type or Config.DEFAULT_LLM
+        use_case = get_ask_question_use_case(llm_type)
+        
+        # Ejecutar
         result = use_case.execute(request.question)
         
         # Formatear respuesta
@@ -100,11 +98,14 @@ def ask_question(
         return AnswerResponse(
             question=request.question,
             answer=result['answer'],
-            retrieved_chunks=chunk_infos
+            retrieved_chunks=chunk_infos,
+            llm_used=llm_type
         )
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing question: {str(e)}")
+        import traceback
+        traceback.print_exc()  # ← AÑADE ESTA LÍNEA
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
