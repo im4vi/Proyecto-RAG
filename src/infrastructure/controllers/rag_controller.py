@@ -103,8 +103,9 @@ def ask_question(request: QuestionRequest):
         )
         
     except Exception as e:
+        import traceback
+        traceback.print_exc()  # ← AÑADE ESTA LÍNEA
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-
 
 if __name__ == "__main__":
     import uvicorn

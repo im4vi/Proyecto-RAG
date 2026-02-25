@@ -22,4 +22,4 @@ python-dotenv
 sentence-transformers
 pypdf
 langchain-text-splitters
-google-generativeai
+google-genai
