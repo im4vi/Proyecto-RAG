@@ -86,3 +86,8 @@ print(response.json()["answer"])
 
 - **Investigación técnica:** `docs/investigacion.md`
 - **API interactiva:** http://localhost:8000/docs
+- **Frontend:**
+```
+cd frontend
+python3 -m http.server 8080
+```
